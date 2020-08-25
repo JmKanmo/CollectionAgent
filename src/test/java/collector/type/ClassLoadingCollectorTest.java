@@ -15,13 +15,16 @@ import static org.junit.Assert.*;
 
 public class ClassLoadingCollectorTest {
     @InjectMocks
-    ClassLoadingCollector classLoadingCollector;
+    ClassLoadingCollector classLoadingCollector = new ClassLoadingCollector(null, "Collector");
 
     @Mock
     ClassLoadingMXBean classLoadingMXBean;
 
     @Mock
     LoggingController loggingController;
+
+    @Mock
+    LoggingController errorLoggingController;
 
     @Mock
     Map<String, Object> hashMap;
@@ -38,26 +41,33 @@ public class ClassLoadingCollectorTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         assertEquals(thread.getState(), Thread.State.TERMINATED);
     }
 
     @Test
-    public void testConstructor() {
+    public void testInitiation() {
         MockitoAnnotations.initMocks(this);
         assertNotNull(classLoadingCollector);
         assertNotNull(classLoadingMXBean);
         assertNotNull(hashMap);
         assertNotNull(loggingController);
+        assertNotNull(errorLoggingController);
+        assertEquals(classLoadingCollector.getName(), "Collector");
+    }
+
+    @Test
+    public void testCollectClassLoadingInfo() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
+        classLoadingCollector.collectClassLoadingInfo();
+        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
     }
 
     @Test
     public void testPrintClassLoadingInfo() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
         Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
         classLoadingCollector.printClassLoadingInfo();
-        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
         Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
     }
 }

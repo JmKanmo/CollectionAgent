@@ -20,15 +20,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+
 public class HeapMemoryCollectorTest extends TestCase {
     @InjectMocks
-    HeapMemoryCollector heapMemoryCollector;
+    HeapMemoryCollector heapMemoryCollector = new HeapMemoryCollector(null, "heapMemoryCollector");
 
     @Mock
     MemoryMXBean memoryMXBean;
 
     @Mock
     LoggingController loggingController;
+
+    @Mock
+    LoggingController errorLoggingController;
 
     @Mock
     List<GarbageCollectorMXBean> garbageCollectorMXBeans;
@@ -53,43 +58,44 @@ public class HeapMemoryCollectorTest extends TestCase {
     }
 
     @Test
-    public void testConstructor() {
+    public void testInitiation() {
         MockitoAnnotations.initMocks(this);
         assertNotNull(heapMemoryCollector);
         assertNotNull(memoryMXBean);
         assertNotNull(garbageCollectorMXBeans);
         assertNotNull(loggingController);
+        assertNotNull(errorLoggingController);
+        assertEquals(heapMemoryCollector.getName(), "heapMemoryCollector");
     }
 
     @Test
-    public void testPrintMemory() {
+    public void testCollectMemoryUsage() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(memoryMXBean.getHeapMemoryUsage()).thenReturn(ManagementFactory.getMemoryMXBean().getHeapMemoryUsage());
         Mockito.when(memoryMXBean.getNonHeapMemoryUsage()).thenReturn(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage());
-        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
         Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
 
-        heapMemoryCollector.printMemory();
+        heapMemoryCollector.collectMemoryUsage();
 
         Mockito.verify(memoryMXBean, Mockito.times(1)).getHeapMemoryUsage();
         Mockito.verify(memoryMXBean, Mockito.times(1)).getNonHeapMemoryUsage();
-        Mockito.verify(loggingController, Mockito.times(2)).logging(Mockito.any(), Mockito.anyString());
         Mockito.verify(hashMap, Mockito.times(2)).put(Mockito.anyString(), Mockito.any());
     }
 
     @Test
-    public void testPrintGarbageCollector() {
+    public void testCollectGarbageCollection() {
         MockitoAnnotations.initMocks(this);
         List<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
         heapMemoryCollector.setGarbageCollectorMXBeans(garbageCollectorMXBeans);
-
-        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
         Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
-
         heapMemoryCollector.setGarbageCollectorMXBeans(garbageCollectorMXBeans);
-        heapMemoryCollector.printGarbageCollector();
-
-        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
+        heapMemoryCollector.collectGarbageCollection();
         Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
+    }
+
+    @Test
+    public void printInfo() {
+        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
+        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
     }
 }

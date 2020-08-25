@@ -9,12 +9,13 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.Map;
 
 public class ThreadCollectorTest extends TestCase {
     @InjectMocks
-    ThreadCollector threadCollector;
+    ThreadCollector threadCollector = new ThreadCollector(null,"threadCollector");
 
     @Mock
     LoggingController loggingController;
@@ -42,60 +43,31 @@ public class ThreadCollectorTest extends TestCase {
     }
 
     @Test
-    public void testConstructor() {
+    public void testInitiation() {
         MockitoAnnotations.initMocks(this);
         assertNotNull(threadCollector);
         assertNotNull(hashMap);
         assertNotNull(threadMXBean);
         assertNotNull(loggingController);
+        assertEquals(threadCollector.getName(),"threadCollector");
+    }
+
+    @Test
+    public void testCollectThreadInfo() {
+        MockitoAnnotations.initMocks(this);
+        long threadInfoId = ManagementFactory.getThreadMXBean().getAllThreadIds()[0];
+        ThreadInfo tempThreadInfo = ManagementFactory.getThreadMXBean().getThreadInfo(threadInfoId);
+        Mockito.when(threadMXBean.getThreadInfo(Mockito.anyLong())).thenReturn(tempThreadInfo);
+        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
+        threadCollector.collectThreadInfo(Mockito.anyString(), new long[]{25,88});
+        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
     }
 
     @Test
     public void testPrintInfo() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
         Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
         threadCollector.printInfo();
-        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
         Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
-    }
-
-    @Test
-    public void testPrintDeadLockThreads() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
-        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
-        Mockito.when(threadMXBean.findDeadlockedThreads()).thenReturn(new long[]{3});
-        threadCollector.printDeadLockThreads();
-        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
-        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
-    }
-
-    @Test
-    public void testPrintAllThreads() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
-        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
-        Mockito.when(threadMXBean.getAllThreadIds()).thenReturn(new long[]{3});
-        threadCollector.printAllThreads();
-        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
-        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
-    }
-
-    @Test
-    public void testPrintThreads() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
-        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
-        threadCollector.printThreads(Mockito.anyString(), new long[]{0});
-        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
-        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
-    }
-
-    @Test
-    public void testPrintThread() {
-        MockitoAnnotations.initMocks(this);
-        ThreadCollector threadCollector = new ThreadCollector();
-        threadCollector.printInfo();
     }
 }

@@ -11,33 +11,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class HeapMemoryCollector implements Runnable {
+public class HeapMemoryCollector extends Thread {
     private MemoryMXBean memoryMXBean;
     private List<GarbageCollectorMXBean> garbageCollectorMXBeans;
     private LoggingController loggingController;
+    private LoggingController errorLoggingController;
     private Map<String, Object> hashMap;
     private Gson gson;
 
     public HeapMemoryCollector() {
+    }
+
+    public HeapMemoryCollector(ThreadGroup threadGroup, String threadName) {
+        super(threadGroup, threadName);
         memoryMXBean = ManagementFactory.getMemoryMXBean();
         garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
-        loggingController = new LoggingController("D:\\logfile\\agentLog\\heapLog\\info.log");
+        loggingController = new LoggingController("D:\\logfile\\agentLog\\heapLog\\heapMemoryCollectorInfo.log");
+        errorLoggingController = new LoggingController("D:\\logfile\\agentLog\\heapLog\\heapMemoryCollectorError.log");
         hashMap = new HashMap<>();
         gson = new GsonBuilder().create();
     }
 
-    public void printMemory() {
+    public void collectMemoryUsage() {
         MemoryUsage memoryUsage = this.memoryMXBean.getHeapMemoryUsage();
         MemoryUsage memoryUnUsage = this.memoryMXBean.getNonHeapMemoryUsage();
 
         Map<String, Object> heapMemoryMap = new HashMap<>();
+        Map<String, Object> nonHeapMemoryMap = new HashMap<>();
 
         heapMemoryMap.put("init", memoryUsage.getInit());
         heapMemoryMap.put("used", memoryUsage.getUsed());
         heapMemoryMap.put("commited", memoryUsage.getCommitted());
         heapMemoryMap.put("max", memoryUsage.getMax());
-
-        Map<String, Object> nonHeapMemoryMap = new HashMap<>();
 
         nonHeapMemoryMap.put("init", memoryUnUsage.getInit());
         nonHeapMemoryMap.put("used", memoryUnUsage.getUsed());
@@ -46,12 +51,9 @@ public class HeapMemoryCollector implements Runnable {
 
         hashMap.put("heapMemory", heapMemoryMap);
         hashMap.put("nonHeapMemory", nonHeapMemoryMap);
-
-        loggingController.logging(Level.INFO, heapMemoryMap.toString());
-        loggingController.logging(Level.INFO, nonHeapMemoryMap.toString());
     }
 
-    public void printGarbageCollector() {
+    public void collectGarbageCollection() {
         List<Map<String, Object>> gcMapList = new ArrayList<>();
 
         for (GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMXBeans) {
@@ -64,60 +66,30 @@ public class HeapMemoryCollector implements Runnable {
             gcMapList.add(gcMap);
         }
         hashMap.put("garbageCollection", gcMapList);
-        loggingController.logging(Level.INFO, gcMapList.toString());
+    }
+
+    public void printInfo() {
+        String jsonStr = gson.toJson(hashMap);
+        loggingController.logging(Level.INFO, jsonStr);
     }
 
     @Override
     public void run() {
         while (true) {
             try {
-                printMemory();
-                printGarbageCollector();
+                collectMemoryUsage();
+                collectGarbageCollection();
+                printInfo();
                 Thread.sleep(10000);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
+                errorLoggingController.logging(Level.WARNING, e.toString() + " " + e.getStackTrace().toString());
                 break;
             }
         }
     }
 
-    public MemoryMXBean getMemoryMXBean() {
-        return memoryMXBean;
-    }
-
-    public void setMemoryMXBean(MemoryMXBean memoryMXBean) {
-        this.memoryMXBean = memoryMXBean;
-    }
-
-    public List<GarbageCollectorMXBean> getGarbageCollectorMXBeans() {
-        return garbageCollectorMXBeans;
-    }
-
     public void setGarbageCollectorMXBeans(List<GarbageCollectorMXBean> garbageCollectorMXBeans) {
         this.garbageCollectorMXBeans = garbageCollectorMXBeans;
-    }
-
-    public LoggingController getLoggingController() {
-        return loggingController;
-    }
-
-    public void setLoggingController(LoggingController loggingController) {
-        this.loggingController = loggingController;
-    }
-
-    public Map<String, Object> getHashMap() {
-        return hashMap;
-    }
-
-    public void setHashMap(Map<String, Object> hashMap) {
-        this.hashMap = hashMap;
-    }
-
-    public Gson getGson() {
-        return gson;
-    }
-
-    public void setGson(Gson gson) {
-        this.gson = gson;
     }
 }

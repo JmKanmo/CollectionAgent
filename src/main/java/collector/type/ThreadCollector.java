@@ -13,68 +13,76 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class ThreadCollector implements Runnable {
+public class ThreadCollector extends Thread {
     private ThreadMXBean threadMXBean;
     private LoggingController loggingController;
+    private LoggingController errorLoggingController;
     private Map<String, Object> hashMap;
     private Gson gson;
 
     public ThreadCollector() {
+    }
+
+    public ThreadCollector(ThreadGroup threadGroup, String threadName) {
+        super(threadGroup, threadName);
         threadMXBean = ManagementFactory.getThreadMXBean();
-        loggingController = new LoggingController("D:\\logfile\\agentLog\\threadlog\\info.log");
+        loggingController = new LoggingController("D:\\logfile\\agentLog\\threadlog\\threadCollectorInfo.log");
+        errorLoggingController = new LoggingController("D:\\logfile\\agentLog\\threadlog\\threadCollectorError.log");
         hashMap = new HashMap<>();
         gson = new GsonBuilder().create();
     }
 
-    public void printInfo() {
+    public void collectOverallInfo() {
         Map<String, Object> map = new HashMap<>();
         map.put("DaemonThreadCount", threadMXBean.getDaemonThreadCount());
         map.put("PeakThreadCount", threadMXBean.getPeakThreadCount());
         map.put("TotalStartedThreadCount", threadMXBean.getTotalStartedThreadCount());
-        loggingController.logging(Level.INFO, map.toString());
         hashMap.put("overallInfo", map);
     }
 
-    public void printDeadLockThreads() {
+    public void collectDeadLockThreads() {
         long[] threadIds = threadMXBean.findDeadlockedThreads();
-        printThreads("deadLockThread", threadIds);
+        collectThreadInfo("deadLockThread", threadIds);
     }
 
-    public void printAllThreads() {
+    public void collectAllThreads() {
         long[] threadIds = threadMXBean.getAllThreadIds();
-        printThreads("allThread", threadIds);
+        collectThreadInfo("allThread", threadIds);
     }
 
-    public void printThreads(String name, long[] ids) {
-        if (ids == null || ids.length <= 0) {
-            return;
-        }
+    public void collectThreadInfo(String name, long[] ids) {
         List<Map<String, Object>> threadMapList = new ArrayList<>();
 
         for (long id : ids) {
             ThreadInfo threadInfo = threadMXBean.getThreadInfo(id);
-
-            if (threadInfo != null) {
-                Map<String, Object> threadMap = new HashMap<>();
-                threadMap.put("id", threadInfo.getThreadId());
-                threadMap.put("name", threadInfo.getThreadName());
-                threadMap.put("state", threadInfo.getThreadState());
-                threadMap.put("waitCount", threadInfo.getWaitedCount());
-                threadMap.put("lockName", threadInfo.getLockName());
-                threadMapList.add(threadMap);
-            }
+            Map<String, Object> threadMap = new HashMap<>();
+            threadMap.put("id", threadInfo.getThreadId());
+            threadMap.put("name", threadInfo.getThreadName());
+            threadMap.put("state", threadInfo.getThreadState());
+            threadMap.put("waitCount", threadInfo.getWaitedCount());
+            threadMap.put("lockName", threadInfo.getLockName());
+            threadMapList.add(threadMap);
         }
         hashMap.put(name, threadMapList);
-        loggingController.logging(Level.INFO, threadMapList.toString());
+    }
+
+    public void printInfo() {
+        String jsonStr = gson.toJson(hashMap);
+        loggingController.logging(Level.INFO, jsonStr);
     }
 
     @Override
     public void run() {
         while (true) {
             try {
+                collectOverallInfo();
+                collectDeadLockThreads();
+                collectAllThreads();
+                printInfo();
                 Thread.sleep(10000);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
+                errorLoggingController.logging(Level.WARNING, e.toString() + " " + e.getStackTrace().toString());
                 break;
             }
         }
