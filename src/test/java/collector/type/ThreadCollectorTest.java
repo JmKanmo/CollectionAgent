@@ -2,8 +2,6 @@ package collector.type;
 
 import junit.framework.TestCase;
 import logger.LoggingController;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -12,6 +10,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
+import java.util.Map;
 
 public class ThreadCollectorTest extends TestCase {
     @InjectMocks
@@ -22,6 +21,9 @@ public class ThreadCollectorTest extends TestCase {
 
     @Mock
     ThreadMXBean threadMXBean;
+
+    @Mock
+    Map<String, Object> hashMap;
 
     @Test
     public void testThread() {
@@ -41,33 +43,59 @@ public class ThreadCollectorTest extends TestCase {
 
     @Test
     public void testConstructor() {
-        ThreadCollector threadCollector = new ThreadCollector();
-
-        assertNotNull(threadCollector.getLoggingController());
-        assertNotNull(threadCollector.getStringBuilder());
-        assertNotNull(threadCollector.getThreadMXBean());
+        MockitoAnnotations.initMocks(this);
+        assertNotNull(threadCollector);
+        assertNotNull(hashMap);
+        assertNotNull(threadMXBean);
+        assertNotNull(loggingController);
     }
 
     @Test
-    public void testStringBuilder() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("hello");
-        stringBuilder.setLength(0);
-        assertEquals(stringBuilder.toString(), "");
+    public void testPrintInfo() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
+        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
+        threadCollector.printInfo();
+        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
+        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
+    }
+
+    @Test
+    public void testPrintDeadLockThreads() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
+        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
+        Mockito.when(threadMXBean.findDeadlockedThreads()).thenReturn(new long[]{3});
+        threadCollector.printDeadLockThreads();
+        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
+        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
+    }
+
+    @Test
+    public void testPrintAllThreads() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
+        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
+        Mockito.when(threadMXBean.getAllThreadIds()).thenReturn(new long[]{3});
+        threadCollector.printAllThreads();
+        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
+        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
+    }
+
+    @Test
+    public void testPrintThreads() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
+        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
+        threadCollector.printThreads(Mockito.anyString(), new long[]{0});
+        Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
+        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
     }
 
     @Test
     public void testPrintThread() {
         MockitoAnnotations.initMocks(this);
-        ThreadMXBean tempThreadMXBean = ManagementFactory.getThreadMXBean();
-
-        Mockito.when(threadMXBean.getAllThreadIds()).thenReturn(tempThreadMXBean.getAllThreadIds());
-        Mockito.when(threadMXBean.getThreadInfo(Mockito.anyLong())).thenReturn(null);
-
-        threadCollector.setThreadMXBean(threadMXBean);
-        threadCollector.printThreadInfo();
-
-        Mockito.verify(threadMXBean, Mockito.times(1)).getAllThreadIds();
-        Mockito.verify(threadMXBean, Mockito.times(tempThreadMXBean.getAllThreadIds().length)).getThreadInfo(Mockito.anyLong());
+        ThreadCollector threadCollector = new ThreadCollector();
+        threadCollector.printInfo();
     }
 }
