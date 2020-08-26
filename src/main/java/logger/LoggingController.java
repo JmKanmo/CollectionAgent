@@ -8,12 +8,12 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class LoggingController {
-    private Logger logger;
-    private FileHandler fileHandler;
+    private static Logger logger;
+    private static FileHandler fileHandler;
 
-    public LoggingController(String path) {
+    static {
         try {
-            fileHandler = new FileHandler(path, true);
+            fileHandler = new FileHandler("D:\\logfile\\agentLog\\agent.log", true);
             logger = Logger.getLogger(LoggingController.class.getName());
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setEncoding("UTF-8");
@@ -21,11 +21,6 @@ public class LoggingController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public LoggingController(Logger logger, FileHandler fileHandler) {
-        this.logger = logger;
-        this.fileHandler = fileHandler;
     }
 
     public void setLogger(Logger logger) {
@@ -44,7 +39,7 @@ public class LoggingController {
         return fileHandler;
     }
 
-    public void logging(Level level, String msg) {
-        logger.log(level, msg);
+    public static void logging(Level level, String msg) {
+        logger.log(level, msg + "\n");
     }
 }

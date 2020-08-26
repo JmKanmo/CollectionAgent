@@ -8,20 +8,23 @@ import logger.LoggingController;
 
 import java.util.logging.Level;
 
-public class CollectionController {
+public class CollectionController extends Thread {
     private ThreadGroup threadGroup;
-    private LoggingController errorLoggingController;
 
     public CollectionController() {
         try {
             threadGroup = new ThreadGroup("collector-threads");
-            errorLoggingController = new LoggingController("D:\\logfile\\agentLog\\controller\\collectionControllerError.log");
         } catch (Exception e) {
-            errorLoggingController.logging(Level.WARNING, e.toString());
+            LoggingController.logging(Level.WARNING, e.toString());
         }
     }
 
-    public void start() {
+    public ThreadGroup retThreadGroup() {
+        return threadGroup;
+    }
+
+    @Override
+    public void run() {
         ClassLoadingCollector classLoadingCollector = new ClassLoadingCollector(threadGroup, "classLoadingCollector");
         HeapMemoryCollector heapMemoryCollector = new HeapMemoryCollector(threadGroup, "heapMemoryCollector");
         RunTimeCollector runTimeCollector = new RunTimeCollector(threadGroup, "runTimeCollector");
@@ -31,9 +34,5 @@ public class CollectionController {
         heapMemoryCollector.start();
         runTimeCollector.start();
         threadCollector.start();
-    }
-
-    public ThreadGroup getThreadGroup() {
-        return threadGroup;
     }
 }

@@ -20,9 +20,6 @@ public class RunTimeCollectorTest {
     RuntimeMXBean runtimeMXBean;
 
     @Mock
-    LoggingController loggingController;
-
-    @Mock
     Map<String, Object> hashMap;
 
     @Test
@@ -45,7 +42,6 @@ public class RunTimeCollectorTest {
     public void testInitiation() {
         MockitoAnnotations.initMocks(this);
         assertNotNull(runTimeCollector);
-        assertNotNull(loggingController);
         assertNotNull(hashMap);
         assertNotNull(runtimeMXBean);
         assertEquals(runTimeCollector.getName(),"runTimeCollector");
@@ -57,13 +53,5 @@ public class RunTimeCollectorTest {
         Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
         runTimeCollector.collectRuntimeInfo();
         Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
-    }
-
-    @Test
-    public void testPrintInfo() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
-        runTimeCollector.printInfo();
-        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
     }
 }

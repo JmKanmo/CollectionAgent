@@ -15,8 +15,6 @@ import java.util.logging.Level;
 
 public class ThreadCollector extends Thread {
     private ThreadMXBean threadMXBean;
-    private LoggingController loggingController;
-    private LoggingController errorLoggingController;
     private Map<String, Object> hashMap;
     private Gson gson;
 
@@ -26,8 +24,6 @@ public class ThreadCollector extends Thread {
     public ThreadCollector(ThreadGroup threadGroup, String threadName) {
         super(threadGroup, threadName);
         threadMXBean = ManagementFactory.getThreadMXBean();
-        loggingController = new LoggingController("D:\\logfile\\agentLog\\threadlog\\threadCollectorInfo.log");
-        errorLoggingController = new LoggingController("D:\\logfile\\agentLog\\threadlog\\threadCollectorError.log");
         hashMap = new HashMap<>();
         gson = new GsonBuilder().create();
     }
@@ -68,7 +64,7 @@ public class ThreadCollector extends Thread {
 
     public void printInfo() {
         String jsonStr = gson.toJson(hashMap);
-        loggingController.logging(Level.INFO, jsonStr);
+        LoggingController.logging(Level.INFO, jsonStr);
     }
 
     @Override
@@ -82,41 +78,20 @@ public class ThreadCollector extends Thread {
                 Thread.sleep(10000);
             } catch (Exception e) {
                 e.printStackTrace();
-                errorLoggingController.logging(Level.WARNING, e.toString() + " " + e.getStackTrace().toString());
+                StackTraceElement[] stktrace = e.getStackTrace();
+                StringBuilder stringBuilder = new StringBuilder();
+
+                stringBuilder.append("ERROR:" + e.toString() + "\n");
+
+                for (int i = 0; i < stktrace.length; i++) {
+                    stringBuilder.append("Index " + i
+                            + " of stack trace"
+                            + ", array conatins = "
+                            + stktrace[i].toString() + "\n");
+                }
+                LoggingController.logging(Level.WARNING, stringBuilder.toString());
                 break;
             }
         }
-    }
-
-    public ThreadMXBean getThreadMXBean() {
-        return threadMXBean;
-    }
-
-    public void setThreadMXBean(ThreadMXBean threadMXBean) {
-        this.threadMXBean = threadMXBean;
-    }
-
-    public LoggingController getLoggingController() {
-        return loggingController;
-    }
-
-    public void setLoggingController(LoggingController loggingController) {
-        this.loggingController = loggingController;
-    }
-
-    public Map<String, Object> getHashMap() {
-        return hashMap;
-    }
-
-    public void setHashMap(Map<String, Object> hashMap) {
-        this.hashMap = hashMap;
-    }
-
-    public Gson getGson() {
-        return gson;
-    }
-
-    public void setGson(Gson gson) {
-        this.gson = gson;
     }
 }

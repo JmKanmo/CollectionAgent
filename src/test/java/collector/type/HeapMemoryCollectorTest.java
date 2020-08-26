@@ -13,12 +13,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import java.lang.management.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,12 +31,6 @@ public class HeapMemoryCollectorTest extends TestCase {
 
     @Mock
     MemoryMXBean memoryMXBean;
-
-    @Mock
-    LoggingController loggingController;
-
-    @Mock
-    LoggingController errorLoggingController;
 
     @Mock
     List<GarbageCollectorMXBean> garbageCollectorMXBeans;
@@ -63,8 +60,6 @@ public class HeapMemoryCollectorTest extends TestCase {
         assertNotNull(heapMemoryCollector);
         assertNotNull(memoryMXBean);
         assertNotNull(garbageCollectorMXBeans);
-        assertNotNull(loggingController);
-        assertNotNull(errorLoggingController);
         assertEquals(heapMemoryCollector.getName(), "heapMemoryCollector");
     }
 
@@ -91,11 +86,5 @@ public class HeapMemoryCollectorTest extends TestCase {
         heapMemoryCollector.setGarbageCollectorMXBeans(garbageCollectorMXBeans);
         heapMemoryCollector.collectGarbageCollection();
         Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
-    }
-
-    @Test
-    public void printInfo() {
-        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
-        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
     }
 }

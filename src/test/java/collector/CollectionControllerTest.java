@@ -15,7 +15,7 @@ public class CollectionControllerTest extends TestCase {
             e.printStackTrace();
         }
 
-        ThreadGroup threadGroup = collectionController.getThreadGroup();
+        ThreadGroup threadGroup = collectionController.retThreadGroup();
         assertEquals(threadGroup.activeCount(), 3);
         threadGroup.interrupt();
 

@@ -14,8 +14,6 @@ import java.util.logging.Level;
 public class HeapMemoryCollector extends Thread {
     private MemoryMXBean memoryMXBean;
     private List<GarbageCollectorMXBean> garbageCollectorMXBeans;
-    private LoggingController loggingController;
-    private LoggingController errorLoggingController;
     private Map<String, Object> hashMap;
     private Gson gson;
 
@@ -26,8 +24,6 @@ public class HeapMemoryCollector extends Thread {
         super(threadGroup, threadName);
         memoryMXBean = ManagementFactory.getMemoryMXBean();
         garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
-        loggingController = new LoggingController("D:\\logfile\\agentLog\\heapLog\\heapMemoryCollectorInfo.log");
-        errorLoggingController = new LoggingController("D:\\logfile\\agentLog\\heapLog\\heapMemoryCollectorError.log");
         hashMap = new HashMap<>();
         gson = new GsonBuilder().create();
     }
@@ -70,7 +66,7 @@ public class HeapMemoryCollector extends Thread {
 
     public void printInfo() {
         String jsonStr = gson.toJson(hashMap);
-        loggingController.logging(Level.INFO, jsonStr);
+        LoggingController.logging(Level.INFO, jsonStr);
     }
 
     @Override
@@ -83,7 +79,17 @@ public class HeapMemoryCollector extends Thread {
                 Thread.sleep(10000);
             } catch (Exception e) {
                 e.printStackTrace();
-                errorLoggingController.logging(Level.WARNING, e.toString() + " " + e.getStackTrace().toString());
+                StackTraceElement[] stktrace = e.getStackTrace();
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("ERROR:" + e.toString() + "\n");
+
+                for (int i = 0; i < stktrace.length; i++) {
+                    stringBuilder.append("Index " + i
+                            + " of stack trace"
+                            + ", array conatins = "
+                            + stktrace[i].toString() + "\n");
+                }
+                LoggingController.logging(Level.WARNING, stringBuilder.toString());
                 break;
             }
         }

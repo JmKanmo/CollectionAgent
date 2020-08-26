@@ -18,9 +18,6 @@ public class ThreadCollectorTest extends TestCase {
     ThreadCollector threadCollector = new ThreadCollector(null,"threadCollector");
 
     @Mock
-    LoggingController loggingController;
-
-    @Mock
     ThreadMXBean threadMXBean;
 
     @Mock
@@ -48,7 +45,6 @@ public class ThreadCollectorTest extends TestCase {
         assertNotNull(threadCollector);
         assertNotNull(hashMap);
         assertNotNull(threadMXBean);
-        assertNotNull(loggingController);
         assertEquals(threadCollector.getName(),"threadCollector");
     }
 
@@ -61,13 +57,5 @@ public class ThreadCollectorTest extends TestCase {
         Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
         threadCollector.collectThreadInfo(Mockito.anyString(), new long[]{25,88});
         Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
-    }
-
-    @Test
-    public void testPrintInfo() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
-        threadCollector.printInfo();
-        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
     }
 }

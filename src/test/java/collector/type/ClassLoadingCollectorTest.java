@@ -3,13 +3,13 @@ package collector.type;
 import logger.LoggingController;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
+import org.mockito.internal.verification.VerificationModeFactory;
+import org.powermock.api.mockito.PowerMockito;
 
 import java.lang.management.ClassLoadingMXBean;
 import java.util.Map;
+import java.util.logging.Level;
 
 import static org.junit.Assert.*;
 
@@ -19,12 +19,6 @@ public class ClassLoadingCollectorTest {
 
     @Mock
     ClassLoadingMXBean classLoadingMXBean;
-
-    @Mock
-    LoggingController loggingController;
-
-    @Mock
-    LoggingController errorLoggingController;
 
     @Mock
     Map<String, Object> hashMap;
@@ -50,8 +44,6 @@ public class ClassLoadingCollectorTest {
         assertNotNull(classLoadingCollector);
         assertNotNull(classLoadingMXBean);
         assertNotNull(hashMap);
-        assertNotNull(loggingController);
-        assertNotNull(errorLoggingController);
         assertEquals(classLoadingCollector.getName(), "Collector");
     }
 
@@ -61,13 +53,5 @@ public class ClassLoadingCollectorTest {
         Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
         classLoadingCollector.collectClassLoadingInfo();
         Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
-    }
-
-    @Test
-    public void testPrintClassLoadingInfo() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.doNothing().when(loggingController).logging(Mockito.any(), Mockito.anyString());
-        classLoadingCollector.printClassLoadingInfo();
-        Mockito.verify(loggingController, Mockito.times(1)).logging(Mockito.any(), Mockito.anyString());
     }
 }
