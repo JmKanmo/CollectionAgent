@@ -78,18 +78,7 @@ public class HeapMemoryCollector extends Thread {
                 printInfo();
                 Thread.sleep(10000);
             } catch (Exception e) {
-                e.printStackTrace();
-                StackTraceElement[] stktrace = e.getStackTrace();
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("ERROR:" + e.toString() + "\n");
-
-                for (int i = 0; i < stktrace.length; i++) {
-                    stringBuilder.append("Index " + i
-                            + " of stack trace"
-                            + ", array conatins = "
-                            + stktrace[i].toString() + "\n");
-                }
-                LoggingController.logging(Level.WARNING, stringBuilder.toString());
+                LoggingController.errorLogging(e);
                 break;
             }
         }

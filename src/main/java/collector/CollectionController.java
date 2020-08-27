@@ -15,7 +15,7 @@ public class CollectionController extends Thread {
         try {
             threadGroup = new ThreadGroup("collector-threads");
         } catch (Exception e) {
-            LoggingController.logging(Level.WARNING, e.toString());
+            LoggingController.errorLogging(e);
         }
     }
 

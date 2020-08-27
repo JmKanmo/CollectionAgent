@@ -11,6 +11,5 @@ public class LoggingControllerTest extends TestCase {
         LoggingController loggingController = new LoggingController();
         assertNotNull(loggingController.getLogger());
         assertNotNull(loggingController.getFileHandler());
-        LoggingController.logging(Level.INFO,"hello world");
     }
 }

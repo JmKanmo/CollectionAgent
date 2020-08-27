@@ -42,4 +42,19 @@ public class LoggingController {
     public static void logging(Level level, String msg) {
         logger.log(level, msg + "\n");
     }
+
+    public static void errorLogging(Exception e) {
+        e.printStackTrace();
+        StackTraceElement[] stacktrace = e.getStackTrace();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("ERROR:" + e.toString() + "\n");
+
+        for (int i = 0; i < stacktrace.length; i++) {
+            stringBuilder.append("Index " + i
+                    + " of stack trace"
+                    + ", array conatins = "
+                    + stacktrace[i].toString() + "\n");
+        }
+        LoggingController.logging(Level.WARNING, stringBuilder.toString());
+    }
 }
