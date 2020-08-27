@@ -6,7 +6,6 @@ import collector.type.RunTimeCollector;
 import collector.type.ThreadCollector;
 import logger.LoggingController;
 
-import java.util.logging.Level;
 
 public class CollectionController extends Thread {
     private ThreadGroup threadGroup;

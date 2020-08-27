@@ -1,15 +1,16 @@
 package config;
 
 import logger.LoggingController;
-
-import javax.swing.text.LabelView;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
-import java.util.logging.Level;
 
 public class ConfigChangeListener implements Runnable {
     private String configFileName;
+    /*
+    window: D:/watch/config.properties
+    linux: /home/junmokang/scriptBox/resources/config.properties
+    * */
     private String fullFilePath = "D:/watch/config.properties";
 
     @Override

@@ -12,6 +12,10 @@ public class AppConfiguration {
         return instance;
     }
 
+    public static Properties getProperties() {
+        return properties;
+    }
+
     public void initialize(final String file) throws IOException {
         FileInputStream fileInputStream = new FileInputStream(file);
         Properties tempProperties = new Properties();
