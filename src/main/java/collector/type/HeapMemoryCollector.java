@@ -3,6 +3,7 @@ package collector.type;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import logger.LoggingController;
+import socket.SocketController;
 
 import java.lang.management.*;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class HeapMemoryCollector extends Thread {
     private List<GarbageCollectorMXBean> garbageCollectorMXBeans;
     private Map<String, Object> hashMap;
     private Gson gson;
+    private SocketController socketController;
 
     public HeapMemoryCollector() {
     }
@@ -26,6 +28,7 @@ public class HeapMemoryCollector extends Thread {
         garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
         hashMap = new HashMap<>();
         gson = new GsonBuilder().create();
+        socketController = new SocketController();
     }
 
     public void collectMemoryUsage() {
@@ -67,6 +70,7 @@ public class HeapMemoryCollector extends Thread {
     public void printInfo() {
         String jsonStr = gson.toJson(hashMap);
         LoggingController.logging(Level.INFO, jsonStr);
+        socketController.sendData(jsonStr);
     }
 
     @Override

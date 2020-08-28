@@ -3,6 +3,7 @@ package collector.type;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import logger.LoggingController;
+import socket.SocketController;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
@@ -17,6 +18,7 @@ public class ThreadCollector extends Thread {
     private ThreadMXBean threadMXBean;
     private Map<String, Object> hashMap;
     private Gson gson;
+    private SocketController socketController;
 
     public ThreadCollector() {
     }
@@ -26,6 +28,7 @@ public class ThreadCollector extends Thread {
         threadMXBean = ManagementFactory.getThreadMXBean();
         hashMap = new HashMap<>();
         gson = new GsonBuilder().create();
+        socketController = new SocketController();
     }
 
     public void collectOverallInfo() {
@@ -48,6 +51,7 @@ public class ThreadCollector extends Thread {
 
     public void collectThreadInfo(String name, long[] ids) {
         List<Map<String, Object>> threadMapList = new ArrayList<>();
+        if (ids == null) return;
 
         for (long id : ids) {
             ThreadInfo threadInfo = threadMXBean.getThreadInfo(id);
@@ -65,6 +69,7 @@ public class ThreadCollector extends Thread {
     public void printInfo() {
         String jsonStr = gson.toJson(hashMap);
         LoggingController.logging(Level.INFO, jsonStr);
+        socketController.sendData(jsonStr);
     }
 
     @Override

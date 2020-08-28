@@ -3,6 +3,7 @@ package collector.type;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import logger.LoggingController;
+import socket.SocketController;
 
 import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.ManagementFactory;
@@ -14,6 +15,7 @@ public class ClassLoadingCollector extends Thread {
     private ClassLoadingMXBean classLoadingMXBean;
     private Map<String, Object> hashMap;
     private Gson gson;
+    private SocketController socketController;
 
     public ClassLoadingCollector() {
     }
@@ -23,6 +25,7 @@ public class ClassLoadingCollector extends Thread {
         classLoadingMXBean = ManagementFactory.getClassLoadingMXBean();
         hashMap = new HashMap<>();
         gson = new GsonBuilder().create();
+        socketController = new SocketController();
     }
 
     public void collectClassLoadingInfo() {
@@ -36,6 +39,7 @@ public class ClassLoadingCollector extends Thread {
     public void printClassLoadingInfo() {
         String jsonStr = gson.toJson(hashMap);
         LoggingController.logging(Level.INFO, jsonStr);
+        socketController.sendData(jsonStr);
     }
 
     @Override
