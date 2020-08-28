@@ -42,14 +42,21 @@ public class SocketController {
 
     public void sendData(String jsonData) {
         try {
-            OutputStream outputStream = socket.getOutputStream();
-            byte[] bytes = jsonData.getBytes("UTF-8");
-            outputStream.write(bytes);
-            outputStream.flush();
+            if (socket.isClosed()) {
+                connect();
+                return;
+            } else {
+                OutputStream outputStream = socket.getOutputStream();
+                byte[] bytes = jsonData.getBytes("UTF-8");
+                outputStream.write(bytes);
+                outputStream.flush();
+            }
         } catch (Exception e) {
             LoggingController.errorLogging(e);
             try {
-                socket.close();
+                if (socket.isClosed() != true) {
+                    socket.close();
+                }
             } catch (IOException ioException) {
                 LoggingController.errorLogging(ioException);
             }

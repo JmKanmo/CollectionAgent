@@ -39,7 +39,7 @@ public class ClassLoadingCollector extends Thread {
     public void printClassLoadingInfo() {
         String jsonStr = gson.toJson(hashMap);
         LoggingController.logging(Level.INFO, jsonStr);
-        socketController.sendData(jsonStr);
+        socketController.sendData(getName() + "&" + jsonStr);
     }
 
     @Override

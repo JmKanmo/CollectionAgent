@@ -69,7 +69,7 @@ public class ThreadCollector extends Thread {
     public void printInfo() {
         String jsonStr = gson.toJson(hashMap);
         LoggingController.logging(Level.INFO, jsonStr);
-        socketController.sendData(jsonStr);
+        socketController.sendData(getName() + "&" + jsonStr);
     }
 
     @Override
