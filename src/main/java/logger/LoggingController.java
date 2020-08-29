@@ -14,7 +14,7 @@ public class LoggingController {
         try {
             /*
             window: D:\logfile\agentLog\agent.log
-            linux: /home/junmokang/scriptBox/agenglog/agent.log
+            linux: /home/junmokang/scriptBox/agentlog/agent.log
             * */
             fileHandler = new FileHandler("D:\\logfile\\agentLog\\agent.log", true);
             logger = Logger.getLogger(LoggingController.class.getName());

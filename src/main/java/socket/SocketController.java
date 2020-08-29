@@ -20,6 +20,10 @@ public class SocketController {
         }
     }
 
+    public Socket getSocket() {
+        return socket;
+    }
+
     public void connect() throws IOException {
         socket = new Socket();
         socket.connect(new InetSocketAddress("localhost", 5001));
