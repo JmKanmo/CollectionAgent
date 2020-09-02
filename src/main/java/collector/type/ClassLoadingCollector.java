@@ -2,6 +2,7 @@ package collector.type;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import config.AppConfiguration;
 import logger.LoggingController;
 import socket.SocketController;
 
@@ -16,6 +17,7 @@ public class ClassLoadingCollector extends Thread {
     private Map<String, Object> hashMap;
     private Gson gson;
     private SocketController socketController;
+    private AppConfiguration appConfiguration;
 
     public ClassLoadingCollector() {
     }
@@ -26,6 +28,7 @@ public class ClassLoadingCollector extends Thread {
         hashMap = new HashMap<>();
         gson = new GsonBuilder().create();
         socketController = new SocketController();
+        appConfiguration = AppConfiguration.getInstance();
     }
 
     public void collectClassLoadingInfo() {
@@ -48,7 +51,7 @@ public class ClassLoadingCollector extends Thread {
             try {
                 collectClassLoadingInfo();
                 printClassLoadingInfo();
-                Thread.sleep(10000);
+                Thread.sleep(Long.parseLong(appConfiguration.getConfiguration("collectSleepTime")));
             } catch (Exception e) {
                 LoggingController.errorLogging(e);
                 break;

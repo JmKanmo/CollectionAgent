@@ -2,6 +2,7 @@ package collector.type;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import config.AppConfiguration;
 import logger.LoggingController;
 import socket.SocketController;
 
@@ -19,6 +20,7 @@ public class ThreadCollector extends Thread {
     private Map<String, Object> hashMap;
     private Gson gson;
     private SocketController socketController;
+    private AppConfiguration appConfiguration;
 
     public ThreadCollector() {
     }
@@ -29,6 +31,7 @@ public class ThreadCollector extends Thread {
         hashMap = new HashMap<>();
         gson = new GsonBuilder().create();
         socketController = new SocketController();
+        appConfiguration = AppConfiguration.getInstance();
     }
 
     public void collectOverallInfo() {
@@ -80,7 +83,7 @@ public class ThreadCollector extends Thread {
                 collectDeadLockThreads();
                 collectAllThreads();
                 printInfo();
-                Thread.sleep(10000);
+                Thread.sleep(Long.parseLong(appConfiguration.getConfiguration("collectSleepTime")));
             } catch (Exception e) {
                 LoggingController.errorLogging(e);
                 break;
