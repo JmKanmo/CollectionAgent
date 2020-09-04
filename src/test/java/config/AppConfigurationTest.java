@@ -25,12 +25,8 @@ public class AppConfigurationTest {
     public void testGetConfiguration() {
         try {
             AppConfiguration.getInstance().initialize("D:/watch/config.properties");
-            String username = AppConfiguration.getInstance().getConfiguration("job");
-            String password = AppConfiguration.getInstance().getConfiguration("favorites");
-            assertEquals(username, "exem");
-            assertEquals(password, "programming");
-            String dbName = AppConfiguration.getInstance().getConfigurationWithDefaultValue("dbname", "postgresl");
-            assertEquals(dbName, "postgresl");
+            String collectSleepTime = AppConfiguration.getInstance().getConfiguration("collectSleepTime");
+            assertEquals(collectSleepTime,"30000");
         } catch (IOException e) {
             e.printStackTrace();
         }

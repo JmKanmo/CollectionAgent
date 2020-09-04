@@ -2,6 +2,7 @@ package socket;
 
 import logger.LoggingController;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -50,7 +51,7 @@ public class SocketController {
                 connect();
                 return;
             } else {
-                OutputStream outputStream = socket.getOutputStream();
+                BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
                 byte[] bytes = jsonData.getBytes("UTF-8");
                 outputStream.write(bytes);
                 outputStream.flush();

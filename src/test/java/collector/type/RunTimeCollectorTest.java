@@ -23,22 +23,6 @@ public class RunTimeCollectorTest {
     Map<String, Object> hashMap;
 
     @Test
-    public void testThread() {
-        Thread thread = new Thread(new RunTimeCollector());
-        thread.start();
-        assertEquals(thread.getState(), Thread.State.RUNNABLE);
-        thread.interrupt();
-
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        assertEquals(thread.getState(), Thread.State.TERMINATED);
-    }
-
-    @Test
     public void testInitiation() {
         MockitoAnnotations.initMocks(this);
         assertNotNull(runTimeCollector);
