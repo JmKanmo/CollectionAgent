@@ -4,6 +4,7 @@ import collector.type.ClassLoadingCollector;
 import collector.type.HeapMemoryCollector;
 import collector.type.RunTimeCollector;
 import collector.type.ThreadCollector;
+import logger.ErrorLoggingController;
 import logger.LoggingController;
 
 
@@ -14,7 +15,7 @@ public class CollectionController extends Thread {
         try {
             threadGroup = new ThreadGroup("collector-threads");
         } catch (Exception e) {
-            LoggingController.errorLogging(e);
+            ErrorLoggingController.errorLogging(e);
         }
     }
 

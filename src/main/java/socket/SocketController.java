@@ -1,10 +1,10 @@
 package socket;
 
+import logger.ErrorLoggingController;
 import logger.LoggingController;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -17,7 +17,7 @@ public class SocketController {
             autoShutdown();
             connect();
         } catch (Exception e) {
-            LoggingController.errorLogging(e);
+            ErrorLoggingController.errorLogging(e);
         }
     }
 
@@ -36,8 +36,8 @@ public class SocketController {
                 if (!socket.isClosed()) {
                     try {
                         socket.close();
-                    } catch (Exception e) {
-                        LoggingController.errorLogging(e);
+                    } catch (IOException e) {
+                        ErrorLoggingController.errorLogging(e);
                     }
                 }
                 LoggingController.logging(Level.INFO, "Socket is closed?" + socket.isClosed());
@@ -45,11 +45,10 @@ public class SocketController {
         });
     }
 
-    public void sendData(String jsonData) {
+    public void sendData(String jsonData) throws IOException {
         try {
             if (socket.isClosed()) {
                 connect();
-                return;
             } else {
                 BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
                 byte[] bytes = jsonData.getBytes("UTF-8");
@@ -57,14 +56,10 @@ public class SocketController {
                 outputStream.flush();
             }
         } catch (Exception e) {
-            LoggingController.errorLogging(e);
-            try {
-                if (socket.isClosed() != true) {
-                    socket.close();
-                }
-            } catch (IOException ioException) {
-                LoggingController.errorLogging(ioException);
+            if (socket.isClosed() != true) {
+                socket.close();
             }
+            throw e;
         }
     }
 }

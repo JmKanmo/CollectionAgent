@@ -3,9 +3,11 @@ package collector.type;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import config.AppConfiguration;
+import logger.ErrorLoggingController;
 import logger.LoggingController;
 import socket.SocketController;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
@@ -69,7 +71,7 @@ public class ThreadCollector extends Thread {
         hashMap.put(name, threadMapList);
     }
 
-    public void printInfo() {
+    public void printInfo() throws IOException {
         String jsonStr = gson.toJson(hashMap);
         LoggingController.logging(Level.INFO, jsonStr);
         socketController.sendData(getName() + "&" + jsonStr);
@@ -83,10 +85,14 @@ public class ThreadCollector extends Thread {
                 collectDeadLockThreads();
                 collectAllThreads();
                 printInfo();
-                Thread.sleep(Long.parseLong(appConfiguration.getConfiguration("collectSleepTime")));
             } catch (Exception e) {
-                LoggingController.errorLogging(e);
-                break;
+                ErrorLoggingController.errorLogging(e);
+            } finally {
+                try {
+                    Thread.sleep(Long.parseLong(appConfiguration.getConfiguration("collectSleepTime")));
+                } catch (InterruptedException e) {
+                    ErrorLoggingController.errorLogging(e);
+                }
             }
         }
     }

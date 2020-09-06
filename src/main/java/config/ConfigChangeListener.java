@@ -1,6 +1,8 @@
 package config;
 
+import logger.ErrorLoggingController;
 import logger.LoggingController;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
@@ -8,17 +10,17 @@ import java.util.List;
 public class ConfigChangeListener implements Runnable {
     private String configFileName;
     /*
-    window: D:/watch/config.properties
+    window: D:/OJT_projects/watch/config.properties
     linux: /home/junmokang/scriptBox/resources/config.properties
     * */
-    private String fullFilePath = "D:/watch/config.properties";
+    private String fullFilePath = "D:/OJT_projects/watch/config.properties";
 
     @Override
     public void run() {
         try {
             register(fullFilePath);
         } catch (IOException e) {
-            LoggingController.errorLogging(e);
+            ErrorLoggingController.errorLogging(e);
         }
     }
 
@@ -56,7 +58,7 @@ public class ConfigChangeListener implements Runnable {
                     break;
                 }
             } catch (Exception e) {
-                LoggingController.errorLogging(e);
+                ErrorLoggingController.errorLogging(e);
             }
         }
         watchService.close();

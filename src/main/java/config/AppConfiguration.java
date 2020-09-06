@@ -1,5 +1,6 @@
 package config;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -17,7 +18,7 @@ public class AppConfiguration {
     }
 
     public void initialize(final String file) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(file);
+        BufferedInputStream fileInputStream = new BufferedInputStream(new FileInputStream(file));
         Properties tempProperties = new Properties();
 
         tempProperties.load(fileInputStream);

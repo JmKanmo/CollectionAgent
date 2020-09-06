@@ -11,7 +11,7 @@ public class AppConfigurationTest {
     public void testInitialize() {
         boolean ret = false;
         try {
-            AppConfiguration.getInstance().initialize("D:/watch/config.properties");
+            AppConfiguration.getInstance().initialize("D:/OJT_projects/watch/config.properties");
             ret = true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -26,7 +26,7 @@ public class AppConfigurationTest {
         try {
             AppConfiguration.getInstance().initialize("D:/watch/config.properties");
             String collectSleepTime = AppConfiguration.getInstance().getConfiguration("collectSleepTime");
-            assertEquals(collectSleepTime,"30000");
+            assertEquals(collectSleepTime, "30000");
         } catch (IOException e) {
             e.printStackTrace();
         }

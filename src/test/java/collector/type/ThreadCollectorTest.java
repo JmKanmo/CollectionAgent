@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ThreadCollectorTest extends TestCase {
     @InjectMocks
-    ThreadCollector threadCollector = new ThreadCollector(null,"threadCollector");
+    ThreadCollector threadCollector = new ThreadCollector(null, "threadCollector");
 
     @Mock
     ThreadMXBean threadMXBean;
@@ -29,7 +29,7 @@ public class ThreadCollectorTest extends TestCase {
         assertNotNull(threadCollector);
         assertNotNull(hashMap);
         assertNotNull(threadMXBean);
-        assertEquals(threadCollector.getName(),"threadCollector");
+        assertEquals(threadCollector.getName(), "threadCollector");
     }
 
     @Test
@@ -39,7 +39,7 @@ public class ThreadCollectorTest extends TestCase {
         ThreadInfo tempThreadInfo = ManagementFactory.getThreadMXBean().getThreadInfo(threadInfoId);
         Mockito.when(threadMXBean.getThreadInfo(Mockito.anyLong())).thenReturn(tempThreadInfo);
         Mockito.when(hashMap.put(Mockito.anyString(), Mockito.any())).thenReturn(null);
-        threadCollector.collectThreadInfo(Mockito.anyString(), new long[]{25,88});
+        threadCollector.collectThreadInfo(Mockito.anyString(), new long[]{25, 88});
         Mockito.verify(hashMap, Mockito.times(1)).put(Mockito.anyString(), Mockito.any());
     }
 }
