@@ -2,7 +2,7 @@
 
 * 개발 기간 (2주 ~ 3주)
 * 개발 언어: JAVA 
-* author: JaKanmo 
+* author: JmKanmo 
 
 <br>
 
