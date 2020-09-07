@@ -4,6 +4,14 @@
 * 개발 언어: JAVA 
 * author: JaKanmo 
 
+<br>
+
+### WAS에 Agent 적용 
+- Tomcat 기준, catalina.sh에 아래의 코드 작성 (경로는 agent.jar 파일 경로) 
+```
+CATALINA_OPTS="-javaagent:D://Agent//build//libs//Agent-1.0-SNAPSHOT.jar"
+```
+<br>
 
 ### 기능 및 요구사항 처리   
 - WAS(ex. Tomcat)과 함께 실행되는 에이전트 
