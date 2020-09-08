@@ -1,7 +1,7 @@
 ## 수집 에이전트 (CollectionAgent)
 
 * 개발 기간 (2주 ~ 3주)
-* 개발 언어: JAVA 
+* 개발 언어 및 빌드 툴: JAVA,Gradle 
 * author: JmKanmo 
 
 <br>
@@ -15,9 +15,10 @@ CATALINA_OPTS="-javaagent:D://Agent//build//libs//Agent-1.0-SNAPSHOT.jar"
 
 ### 기능 및 요구사항 처리   
 - WAS(ex. Tomcat)과 함께 실행되는 에이전트 
-- JMX를 이용해 WAS가 구동되는 JVM으로부터 힙,클래스,런타임,스레드의 각종 정보를 수집한다. 
+- JMX를 이용해 WAS가 구동되는 JVM으로부터 힙,클래스,런타임,스레드의 각종 정보를 수집
 - 수집 된 정보 및 에러 정보 로그처리를 통한 별도의 파일에 저장 
 - 런타임 중에 파일입출력을 통한 설정 정보 변경 시 반영되도록 작업  
+- 수집한 정보는 IO Socket 통신기법으로 JSON String 형식으로 수집서버(CollectServer) 프로세스에 전송
 <br>
 
 
