@@ -18,7 +18,7 @@ CATALINA_OPTS="-javaagent:D://Agent//build//libs//Agent-1.0-SNAPSHOT.jar"
 - JMX를 이용해 WAS가 구동되는 JVM으로부터 힙,클래스,런타임,스레드의 각종 정보를 수집
 - 수집 된 정보 및 에러 정보 로그처리를 통한 별도의 파일에 저장 
 - 런타임 중에 파일입출력을 통한 설정 정보 변경 시 반영되도록 작업  
-- 수집한 정보는 IO Socket 통신기법으로 JSON String 형식으로 수집서버(CollectServer) 프로세스에 전송
+- 수집한 정보는 IO Socket 통신기법을 이용해 JSON String 형식으로 수집서버(CollectServer) 프로세스에 전송
 <br>
 
 
